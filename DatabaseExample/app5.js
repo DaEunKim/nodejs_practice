@@ -41,7 +41,7 @@ var UserModel;
 var crypto = require('crypto');
 
 function connectDB(){
-	var databaseUrl = 'mongodb://localhost:27017/local';
+	var databaseUrl = 'mongodb://localhost:3000/local';
 	
 	console.log('데이터베이스 연결을 시도합니다. ');
 	

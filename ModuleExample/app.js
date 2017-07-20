@@ -41,7 +41,7 @@ var UserModel;
 var crypto = require('crypto');
 
 function connectDB(){
-	var databaseUrl = 'mongodb://localhost:27017/local';
+	var databaseUrl = 'mongodb://localhost:3000/local';
 	
 	console.log('데이터베이스 연결을 시도합니다. ');
 	
@@ -67,19 +67,9 @@ function connectDB(){
 function createUserSchema(){
 	UserSchema = require('./database/user_schema').createSchema(mongoose);
 	
-	UserModel = mongoose.model("user3", UserSchema);
+	UserModel = mongoose.model("users3", UserSchema);
 	console.log('UserModel 정의함. ');
 	
-	
-	UserSchema = mongoose.Schema({
-		id : {type : String, required: true, unique:true, 'default':' '},
-		hashed_password : {type : String, required:true, 'default':' '},
-		salt : {type:String, required : true},
-		name:{type : String, index : 'hashed', 'default' : ' '},
-		age :{type : Number, 'default' : ' '},
-		created_at :{type:Date, index: {unique : false}, 'default':Date.now},
-		updated_at :{type:Date, index:{unique:false}, 'default':Date.now}
-	});
 	
 	UserSchema.virtual('password').set(function(password){
 		this._password = password;
@@ -119,8 +109,6 @@ function createUserSchema(){
 	}, 'name 칼럼의 값이 없습니다. ');
 	
 	
-	user.init(database, UserSchema, UserModel);
-		
 }
 var addUser = function(database, id, password, name, callback){
 	console.log('addUser 호출됨');

@@ -16,9 +16,11 @@ var app = express();
 app.set('port', process.env.PORT || 3000);
 
 app.use(bodyParser.urlencoded({extended:false}));
+
 app.use(bodyParser.json());
 
 app.use('/public', static(path.join(__dirname, 'public')));
+
 app.use(cookieParser());
 
 app.use(expressSession({
@@ -26,6 +28,7 @@ app.use(expressSession({
 	resave:true,
 	saveUninitialized:true
 }));
+
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -45,6 +48,7 @@ function connectDB(){
 
 var authUser = function(database, id, password, callback){
 	console.log('authUser 호출됨');
+	
 	var users = database.collection('users');
 	
 	users.find({"id":id, "password":password}).toArray(function(err, docs){
@@ -78,7 +82,7 @@ app.post('/process/login', function(req, res){
 				var username = docs[0].name;
 				res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
 				res.write('<h1>로그인 성공</h1>');
-				res.write('<div><p>사용자 아이디 : '+paramId+'</p></div>');
+				res.write('<div><p>사용자 아이디 : '+ paramId + '</p></div>');
 				res.write('<div><p>사용자 이름 : '+username+'</p></div>');
 				res.write("<br><br><a href = '/public/login.html'> 다시 로그인하기</a>");
 				res.end();
@@ -101,8 +105,6 @@ app.post('/process/login', function(req, res){
 	
 });
 
-
-
 var router = express.Router();
 
 router.route('/process/login').post(function(req, res){
@@ -121,9 +123,11 @@ app.use(expressErrorHandler.httpError(404));
 app.use(errorHandler);
 
 
+
 http.createServer(app).listen(app.get('port'), function(){
-	console.log('서버가 시작외었습니당. 포트 : '+app.get('port'));
+	console.log('서버가 시작되었습니당. 포트 : '+app.get('port'));
 	
 	connectDB();
 });
+
 
