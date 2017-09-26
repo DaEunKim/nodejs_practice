@@ -28,31 +28,24 @@ app.use(expressSession({
 }));
 
 var MongoClient = require('mongodb').MongoClient;
-
-
 var mongoose = require('mongoose');
-
 var database;
-
 var UserSchema;
-
 var UserModel;
-
 var crypto = require('crypto');
 
 function connectDB(){
-	var databaseUrl = 'mongodb://localhost:3000/local';
+	var databaseUrl = 'mongodb://localhost:27017/local';
 	
 	console.log('데이터베이스 연결을 시도합니다. ');
-	
 	mongoose.Promise = global.Promise;
 	mongoose.connect(databaseUrl);
 	database = mongoose.connection;
 	
 	database.on('error', console.error.bind(console, 'mongoose connection error.'));
+	
 	database.on('open', function(){
 		console.log('데이터베이스에 연결되었씁니다. : ' + databaseUrl);
-		
 		createUserSchema();
 		
 	});
@@ -70,14 +63,14 @@ function createUserSchema(){
 	UserModel = mongoose.model("users3", UserSchema);
 	console.log('UserModel 정의함. ');
 	
+	user.init(database, UserSchema, UserModel);
 	
 	UserSchema.virtual('password').set(function(password){
 		this._password = password;
 		this.salt = this.makeSalt();
 		this.hashed_password = this.encryptPassword(password);
 		console.log('virtual password 호출됨 : ' + this.hashed_password);
-	})
-	.get(function(){return this._password});
+	}).get(function(){return this._password});
 	
 	UserSchema.method('encryptPassword', function(plainText, inSalt){
 		if(inSalt){
@@ -86,6 +79,7 @@ function createUserSchema(){
 			return crypto.createHmac('sha1', this.salt).update(plainText).degist('hex');
 		}
 	});
+	
 	UserSchema.method('makeSalt', function(){
 		return Math.round((new Date().valueOf()*Math.random()))+'';
 	});
@@ -110,6 +104,7 @@ function createUserSchema(){
 	
 	
 }
+
 var addUser = function(database, id, password, name, callback){
 	console.log('addUser 호출됨');
 	
@@ -236,7 +231,7 @@ router.route('/process/listuser').post(function(req, res){
 				for(var i =0;i<results.length;i++){
 					var curId = results[i]._doc.id;
 					var curName = results[i]._doc.name;
-					res.write('		<li>#' + i + ' : '+curId + ', '+curName+'</li>');
+					res.write('<li>#' + i + ' : '+curId + ', '+curName+'</li>');
 				}
 				
 				res.write('</ul></div>');
@@ -301,8 +296,7 @@ app.use(errorHandler);
 
 
 http.createServer(app).listen(app.get('port'), function(){
-	console.log('서버가 시작외었습니당. 포트 : '+app.get('port'));
-	
+	console.log('서버가 시작되었습니당. 포트 : '+app.get('port'));
 	connectDB();
 });
 

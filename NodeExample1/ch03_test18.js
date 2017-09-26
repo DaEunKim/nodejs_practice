@@ -11,4 +11,3 @@ var person02 = new Person('한울', 26);
 
 console.log(person01.name + '이의 walk(10)을 호출합니다. ');
 person01.walk(10);
-
